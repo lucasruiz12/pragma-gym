@@ -5,7 +5,6 @@ const { Client } = require('../db');
 const getAllClients = async (req, res, next) => {
     const allClients = await Client.findAll();
     try {
-        console.log(allClients)
         allClients.length ? res.status(200).send(allClients) : res.status(404).send('No hay clientes aún')
     }
     catch (error) {
@@ -62,30 +61,36 @@ const updateClient = async (req, res, next) => {
     const { dni } = req.params;
     let client = req.body;
     try {
-        const thisClient = await Client.findOne({
-            where: {
-                dni: dni
-            }
-        })
         const updateClient = await Client.update(client, {
             where: {
                 dni: dni,
             }
         })
-        res.status(200).send('Cliente actualizado: ', thisClient)
+        res.status(200).send("Usuario actualizado")
     }
     catch (error) {
         next(error)
     }
 }
 
-const updateAll = async (req, res, next) => {
-    
+const updateAllNewMonth = async (req, res, next) => {
+    try {
+        const allClients = await Client.findAll();
+        const newMonth = await allClients.map((el) => {
+            const update = el.update({state: false})
+        })
+        console.log("Pasando todo a false");
+        res.status(200).send("Nuevo mes iniciado! Todos los usuarios en rojo.")
+    }
+    catch(error){
+        next(error);
+    }
 }
 
 module.exports = {
     getAllClients,
     getOneClient,
     createClient,
-    updateClient
+    updateClient,
+    updateAllNewMonth
 }
